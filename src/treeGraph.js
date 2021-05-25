@@ -2,7 +2,7 @@ const { Vector3 } = require('three');
 
 class Node {
     constructor(position) {
-        this.poistion = position;
+        this.position = position;
     }
 }
 
