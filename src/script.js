@@ -2,9 +2,13 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
+import TreeGraph from './treeGraph.js'
 
 // Debug
 const gui = new dat.GUI()
+
+//Tree
+const treeGraph = new TreeGraph()
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
