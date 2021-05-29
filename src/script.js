@@ -2,15 +2,10 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
-import TreeGraph from './treeGraph.js'
-import Tree from './tree'
+import Boid from './boid'
 
 // Debug
 const gui = new dat.GUI()
-
-//Tree
-const treeGraph = new TreeGraph()
-const tree = new Tree(treeGraph)
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -18,17 +13,35 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
-// Objects
-const geometry = new THREE.TorusGeometry( .7, .2, 16, 100 );
+// // Objects
+// const geometry = new THREE.TorusGeometry( .7, .2, 16, 100 );
 
-// Materials
+// // Materials
 
-const material = new THREE.MeshBasicMaterial()
-material.color = new THREE.Color(0xff0000)
+// const material = new THREE.MeshBasicMaterial()
+// material.color = new THREE.Color(0xff0000)
 
-// Mesh
-const sphere = new THREE.Mesh(geometry,material)
-scene.add(sphere)
+// // Mesh
+// const sphere = new THREE.Mesh(geometry,material)
+// scene.add(sphere)
+
+// Flock
+const flock = [];
+var geometry = new THREE.PlaneGeometry( 1, 1, 1 );
+const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+for (let i = 0; i < 70; i++) {
+    // let geometry = new THREE.IcosahedronGeometry( Math.random()*1.5 );
+    let boid = new Boid( geometry, material);
+    flock.push( boid );
+    scene.add( boid.mesh );	
+}
+
+//land
+geometry = new THREE.PlaneGeometry( 100, 100 );
+var mesh = new THREE.Mesh( geometry, material );
+mesh.rotateX(-20);
+mesh.position.set(0, 0,-20);
+scene.add( mesh );	
 
 // Lights
 
@@ -68,7 +81,7 @@ window.addEventListener('resize', () =>
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
 camera.position.x = 0
 camera.position.y = 0
-camera.position.z = 2
+camera.position.z = 100
 scene.add(camera)
 
 // Controls
@@ -79,7 +92,8 @@ scene.add(camera)
  * Renderer
  */
 const renderer = new THREE.WebGLRenderer({
-    canvas: canvas
+    canvas: canvas,
+    alpha: true
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -96,7 +110,12 @@ const tick = () =>
     const elapsedTime = clock.getElapsedTime()
 
     // Update objects
-    sphere.rotation.y = .5 * elapsedTime
+    for(let boid of flock) {
+        boid.edges();
+        boid.flock(flock);
+        boid.update();
+        
+    }
 
     // Update Orbital Controls
     // controls.update()
