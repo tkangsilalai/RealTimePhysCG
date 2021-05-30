@@ -28,7 +28,7 @@ const scene = new THREE.Scene()
 // Flock
 const flock = [];
 var geometry = new THREE.PlaneGeometry( 1, 1, 1 );
-const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
 for (let i = 0; i < 70; i++) {
     // let geometry = new THREE.IcosahedronGeometry( Math.random()*1.5 );
     let boid = new Boid( geometry, material);
@@ -37,28 +37,21 @@ for (let i = 0; i < 70; i++) {
 }
 
 // Land
+var loader = new THREE.TextureLoader();
+var texture = loader.load("img/texture/ground.jpg");
 geometry = new THREE.PlaneGeometry( 100, 100 );
-var mesh = new THREE.Mesh( geometry, material );
-mesh.rotateX(-20);
-mesh.position.set(0, 0,-20);
-scene.add( mesh );	
+material = new THREE.MeshBasicMaterial({
+    map: texture
+})
+var plane= new THREE.Mesh( geometry, material );
+plane.rotateX(-20);
+plane.position.set(0, 0,-20);
+scene.add( plane );	
 
 // Sky boxes
-// geometry = new THREE.BoxGeometry(10000, 10000, 10000 );
-// var boxMaterials = 
-// [
-//     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load("img/Skybox/interstellar_ft.png"), side: THREE.DoubleSide}),
-//     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load("img/Skybox/interstellar_bk.png"), side: THREE.DoubleSide}),
-//     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load("img/Skybox/interstellar_up.png"), side: THREE.DoubleSide}),
-//     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load("img/Skybox/interstellar_dn.png"), side: THREE.DoubleSide}),
-//     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load("img/Skybox/interstellar_rt.png"), side: THREE.DoubleSide}),
-//     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load("img/Skybox/interstellar_lf.png"), side: THREE.DoubleSide})
-// ];
-// var boxMaterial = new THREE.MeshBasicMaterial(boxMaterials);
-// var box = THREE.Mesh(geometry, boxMaterial);
-// scene.add(box)
-const loader = new THREE.CubeTextureLoader();
-const texture = loader.load([
+
+loader = new THREE.CubeTextureLoader();
+texture = loader.load([
     "img/Skybox/interstellar_ft.png",
     "img/Skybox/interstellar_bk.png",
     "img/Skybox/interstellar_up.png",
@@ -67,6 +60,7 @@ const texture = loader.load([
     "img/Skybox/interstellar_lf.png"
 ])
 scene.background = texture
+
 // Lights
 
 const pointLight = new THREE.PointLight(0xffffff, 0.1)
