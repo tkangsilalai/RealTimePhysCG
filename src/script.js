@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
 import Boid from './boid'
+import BirdGeometry from './bird'
 
 // Debug
 const gui = new dat.GUI()
@@ -27,26 +28,26 @@ const scene = new THREE.Scene()
 
 // Flock
 const flock = [];
-var geometry = new THREE.PlaneGeometry( 1, 1, 1 );
-var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+var geometry = new THREE.PlaneGeometry(1, 1, 1);
+var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 for (let i = 0; i < 70; i++) {
     // let geometry = new THREE.IcosahedronGeometry( Math.random()*1.5 );
-    let boid = new Boid( geometry, material);
-    flock.push( boid );
-    scene.add( boid.mesh );	
+    let boid = new Boid(geometry, material);
+    flock.push(boid);
+    scene.add(boid.mesh);
 }
 
 // Land
 var loader = new THREE.TextureLoader();
 var texture = loader.load("img/texture/ground.jpg");
-geometry = new THREE.PlaneGeometry( 100, 100 );
+geometry = new THREE.PlaneGeometry(100, 100);
 material = new THREE.MeshBasicMaterial({
     map: texture
 })
-var plane= new THREE.Mesh( geometry, material );
+var plane = new THREE.Mesh(geometry, material);
 plane.rotateX(-20);
-plane.position.set(0, 0,-20);
-scene.add( plane );	
+plane.position.set(0, 0, -20);
+scene.add(plane);
 
 // Sky boxes
 
@@ -61,6 +62,37 @@ texture = loader.load([
 ])
 scene.background = texture
 
+// Bird
+
+geometry = new BirdGeometry();
+
+// For Vertex and Fragment
+const birdUniforms = {
+    'color': { value: new THREE.Color(0xff2200) },
+    'texturePosition': { value: null },
+    'textureVelocity': { value: null },
+    'time': { value: 1.0 },
+    'delta': { value: 0.0 }
+};
+
+// THREE.ShaderMaterial
+material = new THREE.ShaderMaterial({
+    uniforms: birdUniforms,
+    // vertexShader: document.getElementById('birdVS').textContent,
+    // fragmentShader: document.getElementById('birdFS').textContent,
+    side: THREE.DoubleSide
+
+});
+
+const birdMesh = new THREE.Mesh(geometry, material);
+birdMesh.rotation.y = Math.PI / 2;
+// birdMesh.matrixAutoUpdate = false;
+birdMesh.updateMatrix();
+scene.add(birdMesh);
+
+gui.add(birdMesh.rotation, 'z').min(-Math.PI).max(Math.PI).step(0.01)
+gui.add(birdMesh.rotation, 'x').min(-Math.PI).max(Math.PI).step(0.01)
+gui.add(birdMesh.rotation, 'y').min(-Math.PI).max(Math.PI).step(0.01)
 // Lights
 
 const pointLight = new THREE.PointLight(0xffffff, 0.1)
@@ -77,8 +109,7 @@ const sizes = {
     height: window.innerHeight
 }
 
-window.addEventListener('resize', () =>
-{
+window.addEventListener('resize', () => {
     // Update sizes
     sizes.width = window.innerWidth
     sizes.height = window.innerHeight
@@ -122,17 +153,16 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
 const clock = new THREE.Clock()
 
-const tick = () =>
-{
+const tick = () => {
 
     const elapsedTime = clock.getElapsedTime()
 
     // Update objects
-    for(let boid of flock) {
+    for (let boid of flock) {
         boid.edges();
         boid.flock(flock);
         boid.update();
-        
+
     }
 
     // Update Orbital Controls
