@@ -36,13 +36,37 @@ for (let i = 0; i < 70; i++) {
     scene.add( boid.mesh );	
 }
 
-//land
+// Land
 geometry = new THREE.PlaneGeometry( 100, 100 );
 var mesh = new THREE.Mesh( geometry, material );
 mesh.rotateX(-20);
 mesh.position.set(0, 0,-20);
 scene.add( mesh );	
 
+// Sky boxes
+// geometry = new THREE.BoxGeometry(10000, 10000, 10000 );
+// var boxMaterials = 
+// [
+//     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load("img/Skybox/interstellar_ft.png"), side: THREE.DoubleSide}),
+//     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load("img/Skybox/interstellar_bk.png"), side: THREE.DoubleSide}),
+//     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load("img/Skybox/interstellar_up.png"), side: THREE.DoubleSide}),
+//     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load("img/Skybox/interstellar_dn.png"), side: THREE.DoubleSide}),
+//     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load("img/Skybox/interstellar_rt.png"), side: THREE.DoubleSide}),
+//     new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load("img/Skybox/interstellar_lf.png"), side: THREE.DoubleSide})
+// ];
+// var boxMaterial = new THREE.MeshBasicMaterial(boxMaterials);
+// var box = THREE.Mesh(geometry, boxMaterial);
+// scene.add(box)
+const loader = new THREE.CubeTextureLoader();
+const texture = loader.load([
+    "img/Skybox/interstellar_ft.png",
+    "img/Skybox/interstellar_bk.png",
+    "img/Skybox/interstellar_up.png",
+    "img/Skybox/interstellar_dn.png",
+    "img/Skybox/interstellar_rt.png",
+    "img/Skybox/interstellar_lf.png"
+])
+scene.background = texture
 // Lights
 
 const pointLight = new THREE.PointLight(0xffffff, 0.1)
