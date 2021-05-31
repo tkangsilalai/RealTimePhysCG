@@ -134,9 +134,72 @@ camera.position.z = 100
 scene.add(camera)
 
 // Controls
-// const controls = new OrbitControls(camera, canvas)
-// controls.enableDamping = true
+const controls = new OrbitControls(camera, canvas)
+controls.enableDamping = true
 
+window.addEventListener("keydown", onKeyDown, false);
+window.addEventListener("keyup", onKeyUp, false);
+
+function onKeyDown(event) {
+    var keyCode = event.keyCode;
+    switch (keyCode) {
+        case 68: //d
+            keyD = true;
+            break;
+        case 83: //s
+            keyS = true;
+            break;
+        case 65: //a
+            keyA = true;
+            break;
+        case 87: //w
+            keyW = true;
+            break;
+    }
+}
+
+function onKeyUp(event) {
+    var keyCode = event.keyCode;
+
+    switch (keyCode) {
+        case 68: //d
+            keyD = false;
+            break;
+        case 83: //s
+            keyS = false;
+            break;
+        case 65: //a
+            keyA = false;
+            break;
+        case 87: //w
+            keyW = false;
+            break;
+    }
+}
+
+var keyW = false;
+var keyA = false;
+var keyS = false;
+var keyD = false;
+
+//main animation function
+function drawStuff() {
+    window.requestAnimationFrame(drawStuff);
+
+    if (keyD == true) {
+        camera.position.x++;
+    }
+    if (keyS == true) {
+        camera.position.y--;
+    }
+    if (keyA == true) {
+        camera.position.x--;
+    }
+    if (keyW == true) {
+        camera.position.y++;
+    }
+}
+window.requestAnimationFrame(drawStuff);
 /**
  * Renderer
  */
@@ -150,7 +213,6 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 /**
  * Animate
  */
-
 const clock = new THREE.Clock()
 
 const tick = () => {
@@ -164,10 +226,8 @@ const tick = () => {
         boid.update();
 
     }
-
     // Update Orbital Controls
-    // controls.update()
-
+    controls.update();
     // Render
     renderer.render(scene, camera)
 
