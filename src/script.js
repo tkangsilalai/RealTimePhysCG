@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
 import Boid from './boid'
 import BirdGeometry from './bird'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 // Debug
 const gui = new dat.GUI()
@@ -44,6 +45,35 @@ geometry = new THREE.PlaneGeometry(100, 100);
 material = new THREE.MeshBasicMaterial({
     map: texture
 })
+const loaderrr = new GLTFLoader();
+loaderrr.load(
+    // resource URL
+    '/assets/birch_tree.glb',
+    // called when the resource is loaded
+    function (gltf) {
+
+        scene.add(gltf.scene);
+
+        gltf.animations; // Array<THREE.AnimationClip>
+        gltf.scene; // THREE.Group
+        gltf.scenes; // Array<THREE.Group>
+        gltf.cameras; // Array<THREE.Camera>
+        gltf.asset; // Object
+
+    },
+    // called while loading is progressing
+    function (xhr) {
+
+        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+
+    },
+    // called when loading has errors
+    function (error) {
+
+        console.log('An error happened');
+
+    }
+);
 var plane = new THREE.Mesh(geometry, material);
 plane.rotateX(-20);
 plane.position.set(0, 0, -20);
@@ -64,35 +94,66 @@ scene.background = texture
 
 // Bird
 
-geometry = new BirdGeometry();
+// geometry = new BirdGeometry();
 
-// For Vertex and Fragment
-const birdUniforms = {
-    'color': { value: new THREE.Color(0xff2200) },
-    'texturePosition': { value: null },
-    'textureVelocity': { value: null },
-    'time': { value: 1.0 },
-    'delta': { value: 0.0 }
-};
+// // For Vertex and Fragment
+// const birdUniforms = {
+//     'color': { value: new THREE.Color(0xff2200) },
+//     'texturePosition': { value: null },
+//     'textureVelocity': { value: null },
+//     'time': { value: 1.0 },
+//     'delta': { value: 0.0 }
+// };
 
-// THREE.ShaderMaterial
-material = new THREE.ShaderMaterial({
-    uniforms: birdUniforms,
-    // vertexShader: document.getElementById('birdVS').textContent,
-    // fragmentShader: document.getElementById('birdFS').textContent,
-    side: THREE.DoubleSide
+// // THREE.ShaderMaterial
+// material = new THREE.ShaderMaterial({
+//     uniforms: birdUniforms,
+//     // vertexShader: document.getElementById('birdVS').textContent,
+//     // fragmentShader: document.getElementById('birdFS').textContent,
+//     side: THREE.DoubleSide
 
-});
+// });
 
-const birdMesh = new THREE.Mesh(geometry, material);
-birdMesh.rotation.y = Math.PI / 2;
-// birdMesh.matrixAutoUpdate = false;
-birdMesh.updateMatrix();
-scene.add(birdMesh);
+// const birdMesh = new THREE.Mesh(geometry, material);
+// birdMesh.rotation.y = Math.PI / 2;
+// // birdMesh.matrixAutoUpdate = false;
+// birdMesh.updateMatrix();
+// scene.add(birdMesh);
 
-gui.add(birdMesh.rotation, 'z').min(-Math.PI).max(Math.PI).step(0.01)
-gui.add(birdMesh.rotation, 'x').min(-Math.PI).max(Math.PI).step(0.01)
-gui.add(birdMesh.rotation, 'y').min(-Math.PI).max(Math.PI).step(0.01)
+// gui.add(birdMesh.rotation, 'z').min(-Math.PI).max(Math.PI).step(0.01)
+// gui.add(birdMesh.rotation, 'x').min(-Math.PI).max(Math.PI).step(0.01)
+// gui.add(birdMesh.rotation, 'y').min(-Math.PI).max(Math.PI).step(0.01)
+let parrotData
+loaderrr.load(
+    // resource URL
+    '/assets/Flamingo.glb',
+    // called when the resource is loaded
+    function (gltf) {
+        parrotData = gltf
+        console.log(gltf)
+        scene.add(gltf.scene)
+        gltf.animations; // Array<THREE.AnimationClip>
+        gltf.scene; // THREE.Group
+        gltf.scenes; // Array<THREE.Group>
+        gltf.cameras; // Array<THREE.Camera>
+        gltf.asset; // Object
+
+    },
+    // called while loading is progressing
+    function (xhr) {
+
+        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+
+    },
+    // called when loading has errors
+    function (error) {
+
+        console.log('An error happened');
+
+    }
+);
+console.log('Squaaawk!', parrotData);
+
 // Lights
 
 const pointLight = new THREE.PointLight(0xffffff, 0.1)
@@ -100,6 +161,13 @@ pointLight.position.x = 2
 pointLight.position.y = 3
 pointLight.position.z = 4
 scene.add(pointLight)
+gui.add(pointLight.position, 'x').min(-100).max(100).step(0.01)
+
+const pointLight1 = new THREE.PointLight(0xffffff, 0.1)
+pointLight1.position.x = 0
+pointLight1.position.y = 0
+pointLight1.position.z = 0
+scene.add(pointLight1)
 
 /**
  * Sizes
@@ -137,6 +205,7 @@ scene.add(camera)
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 
+
 window.addEventListener("keydown", onKeyDown, false);
 window.addEventListener("keyup", onKeyUp, false);
 
@@ -154,6 +223,9 @@ function onKeyDown(event) {
             break;
         case 87: //w
             keyW = true;
+            break;
+        case 82:
+            keyR = true;
             break;
     }
 }
@@ -174,6 +246,9 @@ function onKeyUp(event) {
         case 87: //w
             keyW = false;
             break;
+        case 82:
+            keyR = false;
+            break;
     }
 }
 
@@ -181,6 +256,7 @@ var keyW = false;
 var keyA = false;
 var keyS = false;
 var keyD = false;
+var keyR = false;
 
 //main animation function
 function drawStuff() {
@@ -197,6 +273,9 @@ function drawStuff() {
     }
     if (keyW == true) {
         camera.position.y++;
+    }
+    if (keyR == true) {
+        camera.position.set(0, 0, 100);
     }
 }
 window.requestAnimationFrame(drawStuff);
