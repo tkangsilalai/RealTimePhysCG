@@ -3,8 +3,9 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
 import Boid from './boid'
-import BirdGeometry from './bird'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { Loop } from './loop.js';
+import { loadBirds } from './bird.js';
 
 // Debug
 const gui = new dat.GUI()
@@ -64,7 +65,7 @@ loaderrr.load(
     // called while loading is progressing
     function (xhr) {
 
-        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+        // console.log((xhr.loaded / xhr.total * 100) + '% loaded');
 
     },
     // called when loading has errors
@@ -93,66 +94,6 @@ texture = loader.load([
 scene.background = texture
 
 // Bird
-
-// geometry = new BirdGeometry();
-
-// // For Vertex and Fragment
-// const birdUniforms = {
-//     'color': { value: new THREE.Color(0xff2200) },
-//     'texturePosition': { value: null },
-//     'textureVelocity': { value: null },
-//     'time': { value: 1.0 },
-//     'delta': { value: 0.0 }
-// };
-
-// // THREE.ShaderMaterial
-// material = new THREE.ShaderMaterial({
-//     uniforms: birdUniforms,
-//     // vertexShader: document.getElementById('birdVS').textContent,
-//     // fragmentShader: document.getElementById('birdFS').textContent,
-//     side: THREE.DoubleSide
-
-// });
-
-// const birdMesh = new THREE.Mesh(geometry, material);
-// birdMesh.rotation.y = Math.PI / 2;
-// // birdMesh.matrixAutoUpdate = false;
-// birdMesh.updateMatrix();
-// scene.add(birdMesh);
-
-// gui.add(birdMesh.rotation, 'z').min(-Math.PI).max(Math.PI).step(0.01)
-// gui.add(birdMesh.rotation, 'x').min(-Math.PI).max(Math.PI).step(0.01)
-// gui.add(birdMesh.rotation, 'y').min(-Math.PI).max(Math.PI).step(0.01)
-let parrotData
-loaderrr.load(
-    // resource URL
-    '/assets/Flamingo.glb',
-    // called when the resource is loaded
-    function (gltf) {
-        parrotData = gltf
-        console.log(gltf)
-        scene.add(gltf.scene)
-        gltf.animations; // Array<THREE.AnimationClip>
-        gltf.scene; // THREE.Group
-        gltf.scenes; // Array<THREE.Group>
-        gltf.cameras; // Array<THREE.Camera>
-        gltf.asset; // Object
-
-    },
-    // called while loading is progressing
-    function (xhr) {
-
-        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-
-    },
-    // called when loading has errors
-    function (error) {
-
-        console.log('An error happened');
-
-    }
-);
-console.log('Squaaawk!', parrotData);
 
 // Lights
 
@@ -303,8 +244,10 @@ const tick = () => {
         boid.edges();
         boid.flock(flock);
         boid.update();
-
     }
+
+
+
     // Update Orbital Controls
     controls.update();
     // Render
@@ -314,4 +257,44 @@ const tick = () => {
     window.requestAnimationFrame(tick)
 }
 
+class World {
+    constructor(camera, scene, renderer) {
+        this.loop = new Loop(camera, scene, renderer);
+    }
+
+    async init() {
+        const { parrot } = await loadBirds();
+        this.loop.updatables.push(parrot);
+        scene.add(parrot);
+    }
+
+    render() {
+        // draw a single frame
+        renderer.render(scene, camera);
+    }
+
+    start() {
+        this.loop.start();
+    }
+
+    stop() {
+        this.loop.stop();
+    }
+}
+async function main() {
+    // Get a reference to the container element
+    // const container = document.querySelector('#scene-container');
+
+    // create a new world
+    const world = new World(camera, scene, renderer);
+
+    // complete async tasks
+    await world.init();
+
+    // start the animation loop
+    world.start();
+}
 tick()
+main().catch((err) => {
+    console.error(err);
+});
