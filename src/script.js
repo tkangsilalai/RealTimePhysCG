@@ -32,12 +32,12 @@ const scene = new THREE.Scene()
 const flock = [];
 var geometry = new THREE.PlaneGeometry(1, 1, 1);
 var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-for (let i = 0; i < 70; i++) {
-    // let geometry = new THREE.IcosahedronGeometry( Math.random()*1.5 );
-    let boid = new Boid(geometry, material);
-    flock.push(boid);
-    scene.add(boid.mesh);
-}
+// for (let i = 0; i < 70; i++) {
+//     // let geometry = new THREE.IcosahedronGeometry( Math.random()*1.5 );
+//     let boid = new Boid(geometry, material);
+//     flock.push(boid);
+//     scene.add(boid.mesh);
+// }
 
 // Land
 var loader = new THREE.TextureLoader();
@@ -98,11 +98,15 @@ scene.background = texture
 // Lights
 
 const pointLight = new THREE.PointLight(0xffffff, 0.1)
-pointLight.position.x = 2
-pointLight.position.y = 3
-pointLight.position.z = 4
+pointLight.position.x = -60
+pointLight.position.y = 100
+pointLight.position.z = 75
+pointLight.intensity = 4
 scene.add(pointLight)
 gui.add(pointLight.position, 'x').min(-100).max(100).step(0.01)
+gui.add(pointLight.position, 'y').min(-100).max(100).step(0.01)
+gui.add(pointLight.position, 'z').min(-100).max(100).step(0.01)
+gui.add(pointLight, 'intensity').min(0).max(20).step(0.01)
 
 const pointLight1 = new THREE.PointLight(0xffffff, 0.1)
 pointLight1.position.x = 0
@@ -264,8 +268,16 @@ class World {
 
     async init() {
         const { parrot } = await loadBirds();
-        this.loop.updatables.push(parrot);
-        scene.add(parrot);
+        
+        for (let i = 0; i < 70; i++) {
+            // let geometry = new THREE.IcosahedronGeometry( Math.random()*1.5 );
+            // let boid = new Boid(parrot);
+            // flock.push(boid);
+            this.loop.updatables.push(parrot);
+            // console.log(boid);
+            // scene.add(boid.mesh);
+            scene.add(parrot);
+        }
     }
 
     render() {

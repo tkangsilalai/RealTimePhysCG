@@ -1,11 +1,11 @@
 import * as THREE from 'three'
 
 export default class Boid {
-    constructor(geometry, material) {
+    constructor(mesh) {
         let vec_neg5 = new THREE.Vector3(-0.5, -0.5, -0.5);
         this.velocity = new THREE.Vector3().random().add(vec_neg5).multiplyScalar(0.5);
         this.acceleration = new THREE.Vector3();
-        this.mesh = new THREE.Mesh( geometry, material );
+        this.mesh = mesh;
         this.mesh.position.add(new THREE.Vector3().random().add(vec_neg5).multiplyScalar(70));
         this.maxForce = 0.001;
     }
