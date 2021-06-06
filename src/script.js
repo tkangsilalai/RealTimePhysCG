@@ -5,8 +5,6 @@ import * as dat from 'dat.gui'
 import Boid from './boid'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { Loop } from './loop.js';
-import { loadBirds } from './bird.js';
-import { AnimationMixer } from 'three';
 
 // Debug
 const gui = new dat.GUI()
