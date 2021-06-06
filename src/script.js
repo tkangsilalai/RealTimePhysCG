@@ -267,16 +267,13 @@ class World {
     }
 
     async init() {
-        
+
         for (let i = 0; i < 70; i++) {
-            const { parrot } = await loadBirds();
-            // let geometry = new THREE.IcosahedronGeometry( Math.random()*1.5 );
-            geometry = parrot.geometry;
-            material = parrot.material;
-            let boid = new Boid(geometry, material);
+            const loader = new GLTFLoader();
+            const parrotData = await loader.loadAsync('assets/Parrot.glb');
+            let boid = new Boid(parrotData, this.loop);
             flock.push(boid);
-            this.loop.updatables.push(parrot);
-            scene.add(boid.mesh);
+            scene.add(boid.model);
             // scene.add(boid);
         }
     }
