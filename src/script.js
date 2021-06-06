@@ -162,6 +162,21 @@ scene.add(camera)
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 
+controls.dampingFactor = 0.25;   //damping inertia
+controls.enableZoom = true;      //Zooming
+controls.maxPolarAngle = Math.PI / 2; // Limit angle of visibility
+controls.minAzimuthAngle = -Math.PI; // radians
+controls.maxAzimuthAngle = Math.PI;
+controls.keys = {
+    LEFT: 65, //left arrow
+    UP: 87, // up arrow
+    RIGHT: 68, // right arrow
+    BOTTOM: 83 // down arrow
+};
+
+controls.addEventListener("change", () => {
+    if (renderer) renderer.render(scene, camera);
+});
 
 window.addEventListener("keydown", onKeyDown, false);
 window.addEventListener("keyup", onKeyUp, false);
@@ -286,7 +301,7 @@ class World {
             const loader = new GLTFLoader();
             const parrotData = await loader.loadAsync('assets/Parrot.glb');
             data = parrotData;
-            let boid = new Boid(parrotData );
+            let boid = new Boid(parrotData);
             flock.push(boid);
             ani_flock.add(boid.mesh)
             scene.add(boid.mesh);
