@@ -104,6 +104,17 @@ pointLight.position.y = 100
 pointLight.position.z = 75
 pointLight.intensity = 4
 scene.add(pointLight)
+
+const parameterController = {
+    alignment: 1.0,
+    cohesion: 1.5,
+    separation: 2.0,
+    attractCenter: false
+};
+gui.add(parameterController, 'alignment', 0.0, 20.0, 0.1);
+gui.add(parameterController, 'cohesion', 0.0, 5.0, 0.1);
+gui.add(parameterController, 'separation', 0.0, 5.0, 0.1);
+gui.add(parameterController, 'attractCenter').name('attract center');
 gui.add(pointLight.position, 'x').min(-100).max(100).step(0.01)
 gui.add(pointLight.position, 'y').min(-100).max(100).step(0.01)
 gui.add(pointLight.position, 'z').min(-100).max(100).step(0.01)
@@ -141,10 +152,10 @@ window.addEventListener('resize', () => {
  * Camera
  */
 // Base camera
-const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 1000)
+const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 10000)
 camera.position.x = 0
 camera.position.y = 0
-camera.position.z = 100
+camera.position.z = 500
 scene.add(camera)
 
 // Controls
@@ -246,8 +257,8 @@ const tick = () => {
 
     // Update objects
     for (let boid of flock) {
-        boid.edges();
-        boid.flock(flock);
+        // boid.edges();
+        boid.flock(flock, parameterController);
         boid.update();
     }
 
@@ -277,8 +288,8 @@ class World {
             data = parrotData;
             let boid = new Boid(parrotData );
             flock.push(boid);
-            ani_flock.add(boid.model)
-            scene.add(boid.model);
+            ani_flock.add(boid.mesh)
+            scene.add(boid.mesh);
             // scene.add(boid);
         }
         const mixer = new THREE.AnimationMixer(ani_flock);
