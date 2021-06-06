@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { AnimationMixer } from 'three';
 
 export default class Boid {
-    constructor(data, loop) {
+    constructor(data ) {
         this.model = data.scene.children[0];
         this.clip = data.animations[0];
         this.mixer = new AnimationMixer(this.model);
@@ -11,9 +11,9 @@ export default class Boid {
         this.model.tick = (delta) => {
             this.mixer.update(delta);
         };
-        loop.updatables.push(this.model);
-        const geometry = this.model.geometry;
-        const material = this.model.material;
+        // loop.updatables.push(this.model);
+        // const geometry = this.model.geometry;
+        // const material = this.model.material;
         let vec_neg5 = new THREE.Vector3(-0.5, -0.5, -0.5);
         this.velocity = new THREE.Vector3().random().add(vec_neg5).multiplyScalar(0.5);
         this.acceleration = new THREE.Vector3();

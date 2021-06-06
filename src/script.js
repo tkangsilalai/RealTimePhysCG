@@ -6,6 +6,7 @@ import Boid from './boid'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { Loop } from './loop.js';
 import { loadBirds } from './bird.js';
+import { AnimationMixer } from 'three';
 
 // Debug
 const gui = new dat.GUI()
@@ -268,14 +269,24 @@ class World {
 
     async init() {
 
+        let data;
+        var ani_flock = new THREE.AnimationObjectGroup;
         for (let i = 0; i < 70; i++) {
             const loader = new GLTFLoader();
             const parrotData = await loader.loadAsync('assets/Parrot.glb');
-            let boid = new Boid(parrotData, this.loop);
+            data = parrotData;
+            let boid = new Boid(parrotData );
             flock.push(boid);
+            ani_flock.add(boid.model)
             scene.add(boid.model);
             // scene.add(boid);
         }
+        const mixer = new THREE.AnimationMixer(ani_flock);
+        mixer.clipAction(data.animations[0]).play();
+        mixer.tick = (delta) => {
+            mixer.update(delta)
+        }
+        this.loop.updatables.push(mixer)
     }
 
     render() {
