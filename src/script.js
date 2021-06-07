@@ -40,8 +40,10 @@ var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 
 // Land
 var loader = new THREE.TextureLoader();
-var texture = loader.load("img/texture/ground.jpg");
-
+var texture = loader.load("img/texture/ground2.jpg");
+texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+texture.offset.set( 0, 0 );
+texture.repeat.set( 15, 15 );
 const loaderrr = new GLTFLoader();
 loaderrr.load(
     // resource URL
