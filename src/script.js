@@ -41,17 +41,15 @@ var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 // Land
 var loader = new THREE.TextureLoader();
 var texture = loader.load("img/texture/ground.jpg");
-geometry = new THREE.PlaneGeometry(100, 100);
-material = new THREE.MeshBasicMaterial({
-    map: texture
-})
+
 const loaderrr = new GLTFLoader();
 loaderrr.load(
     // resource URL
     '/assets/birch_tree.glb',
     // called when the resource is loaded
     function (gltf) {
-
+        gltf.scene.children[0].scale.add(new THREE.Vector3(200, 200, 200));
+        gltf.scene.children[0].position.add(new THREE.Vector3(0, -600, -20));
         scene.add(gltf.scene);
 
         gltf.animations; // Array<THREE.AnimationClip>
@@ -74,9 +72,13 @@ loaderrr.load(
 
     }
 );
+geometry = new THREE.PlaneGeometry(10000, 10000);
+material = new THREE.MeshBasicMaterial({
+    map: texture
+})
 var plane = new THREE.Mesh(geometry, material);
 plane.rotateX(-20);
-plane.position.set(0, 0, -20);
+plane.position.set(0, -600, -20);
 scene.add(plane);
 
 // Sky boxes
