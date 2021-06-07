@@ -42,8 +42,8 @@ var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 var loader = new THREE.TextureLoader();
 var texture = loader.load("img/texture/ground2.jpg");
 texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-texture.offset.set( 0, 0 );
-texture.repeat.set( 15, 15 );
+texture.offset.set(0, 0);
+texture.repeat.set(15, 15);
 const loaderrr = new GLTFLoader();
 loaderrr.load(
     // resource URL
@@ -83,11 +83,11 @@ plane.rotateX(-20);
 plane.position.set(0, -600, -20);
 
 scene.add(plane);
-geometry = new THREE.BoxGeometry( 100, 100, 100 );
-material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-const cube = new THREE.Mesh( geometry, material );
+geometry = new THREE.BoxGeometry(100, 100, 100);
+material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+const cube = new THREE.Mesh(geometry, material);
 cube.position.set(0, -600, -20);
-scene.add( cube );
+scene.add(cube);
 // Sky boxes
 
 loader = new THREE.CubeTextureLoader();
@@ -174,8 +174,8 @@ controls.enableDamping = true
 controls.dampingFactor = 0.25;   //damping inertia
 controls.enableZoom = true;      //Zooming
 controls.maxPolarAngle = Math.PI / 2; // Limit angle of visibility
-controls.minAzimuthAngle = -Math.PI; // radians
-controls.maxAzimuthAngle = Math.PI;
+controls.minAzimuthAngle = -Math.PI + 1; // radians
+controls.maxAzimuthAngle = Math.PI - 1;
 controls.keys = {
     LEFT: 65, //left arrow
     UP: 87, // up arrow
