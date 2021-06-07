@@ -2,11 +2,13 @@ import * as THREE from 'three'
 
 export default class Boid {
     constructor(GLTF) {
-        this.mesh = GLTF.scene.children[0];
+        const model = GLTF.scene.children[0];
+        const geometry = model.geometry;
+        const material = model.material;
         let vec_neg5 = new THREE.Vector3(-0.5, -0.5, -0.5);
         this.velocity = new THREE.Vector3().random().add(vec_neg5).multiplyScalar(0.5);
         this.acceleration = new THREE.Vector3();
-        // this.mesh = new THREE.Mesh(geometry, material);
+        this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.position.add(new THREE.Vector3().random().add(vec_neg5).multiplyScalar(500));
         this.maxForce = 0.001;
 

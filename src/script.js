@@ -81,8 +81,13 @@ material = new THREE.MeshBasicMaterial({
 var plane = new THREE.Mesh(geometry, material);
 plane.rotateX(-20);
 plane.position.set(0, -600, -20);
-scene.add(plane);
 
+scene.add(plane);
+geometry = new THREE.BoxGeometry( 100, 100, 100 );
+material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+const cube = new THREE.Mesh( geometry, material );
+cube.position.set(0, -600, -20);
+scene.add( cube );
 // Sky boxes
 
 loader = new THREE.CubeTextureLoader();
@@ -113,14 +118,16 @@ const parameterController = {
     separation: 2.0,
     attractCenter: false
 };
-gui.add(parameterController, 'alignment', 0.0, 20.0, 0.1);
-gui.add(parameterController, 'cohesion', 0.0, 5.0, 0.1);
-gui.add(parameterController, 'separation', 0.0, 5.0, 0.1);
-gui.add(parameterController, 'attractCenter').name('attract center');
-gui.add(pointLight.position, 'x').min(-100).max(100).step(0.01)
-gui.add(pointLight.position, 'y').min(-100).max(100).step(0.01)
-gui.add(pointLight.position, 'z').min(-100).max(100).step(0.01)
-gui.add(pointLight, 'intensity').min(0).max(20).step(0.01)
+var boid_gui = gui.addFolder("Boid");
+boid_gui.add(parameterController, 'alignment', 0.0, 20.0, 0.1);
+boid_gui.add(parameterController, 'cohesion', 0.0, 5.0, 0.1);
+boid_gui.add(parameterController, 'separation', 0.0, 5.0, 0.1);
+boid_gui.add(parameterController, 'attractCenter').name('attract center');
+var light_gui = gui.addFolder("Light");
+light_gui.add(pointLight.position, 'x').min(-100).max(100).step(0.01)
+light_gui.add(pointLight.position, 'y').min(-100).max(100).step(0.01)
+light_gui.add(pointLight.position, 'z').min(-100).max(100).step(0.01)
+light_gui.add(pointLight, 'intensity').min(0).max(20).step(0.01)
 
 const pointLight1 = new THREE.PointLight(0xffffff, 0.1)
 pointLight1.position.x = 0
