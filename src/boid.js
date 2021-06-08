@@ -2,6 +2,7 @@ import * as THREE from 'three'
 
 export default class Boid {
     constructor(GLTF) {
+        this.perceptionRadius = 100;
         const model = GLTF.scene.children[0];
         const geometry = model.geometry;
         const material = model.material;
@@ -39,7 +40,7 @@ export default class Boid {
     }
 
     align(boids) {
-        let perceptionRadius = 20;
+        let perceptionRadius = this.perceptionRadius;
         let steering = new THREE.Vector3();
         let total = 0;
         for (let other of boids) {
@@ -57,7 +58,7 @@ export default class Boid {
     }
 
     cohesion(boids) {
-        let perceptionRadius = 20;
+        let perceptionRadius = this.perceptionRadius;
         let steering = new THREE.Vector3();
         let total = 0;
         for (let other of boids) {
@@ -76,7 +77,7 @@ export default class Boid {
     }
 
     seperation(boids) {
-        let perceptionRadius = 20;
+        let perceptionRadius = this.perceptionRadius;
         let steering = new THREE.Vector3();
         let total = 0;
         for (let other of boids) {
@@ -110,15 +111,17 @@ export default class Boid {
         return steering;
     }
 
-    flock(boids, parameterController) {
+    flock(boids, parameterController, obstacle) {
         this.acceleration = new THREE.Vector3();
         let alignment = this.align(boids);
         let cohesion = this.cohesion(boids);
         let seperation = this.seperation(boids);
         let attractCenter = this.attractCenter();
+        let dodge = this.dodge(obstacle);
         this.acceleration.add(alignment.multiplyScalar(parameterController.alignment));
         this.acceleration.add(cohesion.multiplyScalar(parameterController.cohesion));
         this.acceleration.add(seperation.multiplyScalar(parameterController.separation));
+        this.acceleration.add(dodge.multiplyScalar(5));
         if (parameterController.attractCenter) {
             this.acceleration.sub(attractCenter.multiplyScalar(2));
         }
@@ -133,5 +136,27 @@ export default class Boid {
         if (this.velocity.length() > this.SPEED_LIMIT) {
             this.velocity.normalize().multiplyScalar(this.SPEED_LIMIT);
         }
+    }
+
+    dodge(obstacle) {
+        let perceptionRadius = this.perceptionRadius;
+        let steering = new THREE.Vector3();
+        const dist_x = Math.abs(this.mesh.position.x - obstacle.center_x);
+        const dist_y = Math.abs(this.mesh.position.y - obstacle.center_y);
+        const dist_z = Math.abs(this.mesh.position.z - obstacle.center_z);
+        const is_x = dist_x <= (obstacle.radius_x + perceptionRadius);
+        const is_y = dist_y <= (obstacle.radius_y + perceptionRadius);
+        const is_z = dist_z <= (obstacle.radius_z + perceptionRadius);
+        if(is_x && is_y && is_z){
+            const center = new THREE.Vector3(obstacle.center_x, this.mesh.position.y, obstacle.center_z);
+            let d = this.mesh.position.distanceTo(center);
+            if (d < perceptionRadius) {
+                let selfPos = this.mesh.position.clone();
+                let diff = selfPos.sub(center);
+                let percent = 1 - (d / perceptionRadius);
+                steering.add(diff.normalize().multiplyScalar(perceptionRadius).multiplyScalar(percent));
+            }
+        }
+        return steering;
     }
 }
