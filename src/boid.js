@@ -6,7 +6,7 @@ const _BOID_FORCE_COHESION = 10;
 
 export default class Boid {
     constructor(GLTF) {
-        const speedMultiplier = Math.floor(Math.random() * (20 - 2 + 1)) + 2;;
+        const speedMultiplier = Math.floor(Math.random() * (20 - 2 + 1)) + 2;
         const scale = 1.0 / speedMultiplier;
         this.radius = scale;
         this.perceptionRadius = 50;
@@ -23,7 +23,7 @@ export default class Boid {
         aimP.copy(this.mesh.position).add(this.velocity);
         this.mesh.lookAt(aimP);
         this.SPEED_LIMIT = 20
-        this.range = 2500
+        this.range = 1500
         // setting for 2D
         // this.mesh.position.setZ(0);
         // this.velocity.setZ(0);
@@ -53,7 +53,7 @@ export default class Boid {
         for (let other of boids) {
             let d = this.mesh.position.distanceTo(other.mesh.position);
             const ratio = this.radius / other.radius;
-            if (other != this && (ratio <= 1.35 && ratio >= 0.75)) {
+            if (other != this && this.radius < 5 && (ratio <= 1.35 && ratio >= 0.75)) {
                 steering.add(other.velocity);
             }
         }
@@ -73,7 +73,7 @@ export default class Boid {
         for (let other of boids) {
             let d = this.mesh.position.distanceTo(other.mesh.position);
             const ratio = this.radius / other.radius;
-            if (other != this && (ratio <= 1.35 && ratio >= 0.75)) {
+            if (other != this && this.radius < 5 && (ratio <= 1.35 && ratio >= 0.75)) {
                 steering.add(other.mesh.position);
             }
         }
@@ -96,24 +96,25 @@ export default class Boid {
         for (let other of boids) {
             let d = this.mesh.position.distanceTo(other.mesh.position);
             const ratio = this.radius / other.radius;
-            if (pass || (other != this && (ratio <= 1.35 && ratio >= 0.75))) {
-                // let selfPos = this.mesh.position.clone();
-                // let diff = selfPos.sub(other.mesh.position);
-                // // if (d < 1) {
-                // //     diff.multiplyScalar(d) ;
-                // // } else {
-                // //     diff.divideScalar(d) ;
-                // // }
-                // // diff.divideScalar(d) ;
-                // let percent = 1 - (d / perceptionRadius);
-                // steering.add(diff.normalize().multiplyScalar(perceptionRadius).multiplyScalar(percent));
-                // total++;
-                const distanceToEntity = Math.max(d - 1.5 * (this.radius + other.radius), 0.001);
-                const directionFromEntity = new THREE.Vector3().subVectors(this.mesh.position, other.mesh.position);
-                const multiplier = (_BOID_FORCE_SEPARATION / distanceToEntity) * (this.radius + other.radius);
-                directionFromEntity.normalize();
-                forceVector.add(directionFromEntity.multiplyScalar(multiplier));
-            }
+            if (this.radius > 5)
+                if (pass || (other != this && this.radius < 5 && (ratio <= 1.35 && ratio >= 0.75))) {
+                    // let selfPos = this.mesh.position.clone();
+                    // let diff = selfPos.sub(other.mesh.position);
+                    // // if (d < 1) {
+                    // //     diff.multiplyScalar(d) ;
+                    // // } else {
+                    // //     diff.divideScalar(d) ;
+                    // // }
+                    // // diff.divideScalar(d) ;
+                    // let percent = 1 - (d / perceptionRadius);
+                    // steering.add(diff.normalize().multiplyScalar(perceptionRadius).multiplyScalar(percent));
+                    // total++;
+                    const distanceToEntity = Math.max(d - 1.5 * (this.radius + other.radius), 0.001);
+                    const directionFromEntity = new THREE.Vector3().subVectors(this.mesh.position, other.mesh.position);
+                    const multiplier = (_BOID_FORCE_SEPARATION / distanceToEntity) * (this.radius + other.radius);
+                    directionFromEntity.normalize();
+                    forceVector.add(directionFromEntity.multiplyScalar(multiplier));
+                }
         }
         return forceVector;
     }
@@ -148,17 +149,26 @@ export default class Boid {
     update() {
         this.mesh.position.add(this.velocity);
         let lastVelo = this.velocity.clone();
-        this.velocity.add(this.acceleration.multiplyScalar(0.001));
+        this.velocity.add(this.acceleration.multiplyScalar(0.02));
         var aimP = new THREE.Vector3();
         aimP.copy(this.mesh.position).add(this.velocity);
         this.mesh.lookAt(aimP);
-        // this.mesh.rotation.set(this.velocity.x, this.velocity.y, this.velocity.z)
+        if (this.mesh.position.x > this.range || this.mesh.position.y > this.range || this.mesh.position.z > this.range || this.mesh.position.x < -this.range || this.mesh.position.y < -this.range || this.mesh.position.z < -this.range) {
+            this.velocity.multiplyScalar(-1);
+            let x = this.mesh.position.x > this.range ? this.range : this.mesh.position.x
+            x = x > this.range ? this.range : x
+            let y = this.mesh.position.y > this.range ? this.range : this.mesh.position.y
+            y = y > this.range ? this.range : y
+            let z = this.mesh.position.z > this.range ? this.range : this.mesh.position.z
+            z = z > this.range ? this.range : z
+            this.mesh.position.set(x, y, z)
+            this.mesh.position.add(this.acceleration.add(new THREE.Vector3(Math.random(), Math.random(), Math.random())));
+        }
         if (this.velocity.length() > this.SPEED_LIMIT) {
             this.velocity.normalize().multiplyScalar(this.SPEED_LIMIT);
         }
-        if (this.mesh.position.x > this.range || this.mesh.position.y > this.range || this.mesh.position.z > this.range || this.mesh.position.x < -this.range || this.mesh.position.y < -this.range || this.mesh.position.z < -this.range) {
-            this.velocity.multiplyScalar(-1);
-        }
+
+        // this.mesh.rotation.set(this.velocity.x, this.velocity.y, this.velocity.z)
     }
 
     dodge(obstacle) {
