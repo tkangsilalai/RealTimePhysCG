@@ -85,11 +85,26 @@ var plane_gui = gui.addFolder("Plane");
 plane_gui.add(plane.rotation, 'x').min(-2*Math.PI).max(2*Math.PI).step(0.01);
 
 scene.add(plane);
-geometry = new THREE.BoxGeometry(100, 100, 100);
+geometry = new THREE.BoxGeometry(424, 1531, 435);
 material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 const cube = new THREE.Mesh(geometry, material);
 cube.position.set(0, -600, -20);
-cube.scale.set(4.24, 15.31, 4.35);
+cube.visible = false;
+cube.geometry.computeBoundingBox();
+const cube_center_x = (cube.geometry.boundingBox.max.x + cube.geometry.boundingBox.min.x)/2
+const cube_center_y = (cube.geometry.boundingBox.max.y + cube.geometry.boundingBox.min.y)/2
+const cube_center_z = (cube.geometry.boundingBox.max.z + cube.geometry.boundingBox.min.z)/2
+const tree_coordinate = {
+    center_x: cube_center_x,
+    center_y: cube_center_y,
+    center_z: cube_center_z,
+    max_x: cube.geometry.boundingBox.max.x,
+    max_y: cube.geometry.boundingBox.max.y,
+    max_z: cube.geometry.boundingBox.max.z,
+    radius_x: (cube.geometry.boundingBox.max.x-cube.geometry.boundingBox.min.x)/2,
+    radius_y: (cube.geometry.boundingBox.max.y-cube.geometry.boundingBox.min.y)/2,
+    radius_z: (cube.geometry.boundingBox.max.z-cube.geometry.boundingBox.min.z)/2
+}
 scene.add(cube);
 var cube_gui = gui.addFolder("Cube");
 cube_gui.add(cube.scale, 'x').min(0).max(10).step(0.01);
@@ -289,7 +304,7 @@ const tick = () => {
     // Update objects
     for (let boid of flock) {
         // boid.edges();
-        boid.flock(flock, parameterController);
+        boid.flock(flock, parameterController, tree_coordinate);
         boid.update();
     }
 
@@ -313,7 +328,7 @@ class World {
 
         let data;
         var ani_flock = new THREE.AnimationObjectGroup;
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 70; i++) {
             const loader = new GLTFLoader();
             const parrotData = await loader.loadAsync('assets/Parrot.glb');
             data = parrotData;
