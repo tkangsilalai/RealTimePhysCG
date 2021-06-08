@@ -313,7 +313,7 @@ class World {
 
         let data;
         var ani_flock = new THREE.AnimationObjectGroup;
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 100; i++) {
             const loader = new GLTFLoader();
             const parrotData = await loader.loadAsync('assets/Parrot.glb');
             data = parrotData;

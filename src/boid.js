@@ -104,7 +104,7 @@ export default class Boid {
 
     attractCenter() {
         let center = new THREE.Vector3(0);
-        let selfPos = this.mesh.position.clone();
+        let selfPos = this.mesh.position.clone().normalize();
         let steering = selfPos.sub(center);
         steering.sub(this.velocity);
         return steering;
@@ -120,19 +120,16 @@ export default class Boid {
         this.acceleration.add(cohesion.multiplyScalar(parameterController.cohesion));
         this.acceleration.add(seperation.multiplyScalar(parameterController.separation));
         if (parameterController.attractCenter) {
-            this.acceleration.sub(attractCenter.multiplyScalar(0.1));
+            this.acceleration.sub(attractCenter.multiplyScalar(2));
         }
 
     }
 
     update() {
         this.mesh.position.add(this.velocity);
-        let lastVelo = this.velocity.clone();
         this.velocity.add(this.acceleration.multiplyScalar(0.001));
-        var aimP = new THREE.Vector3();
-        aimP.copy(this.mesh.position).add(this.velocity);
+        var aimP = this.mesh.position.clone().add(this.velocity);
         this.mesh.lookAt(aimP);
-        // this.mesh.rotation.set(this.velocity.x, this.velocity.y, this.velocity.z)
         if (this.velocity.length() > this.SPEED_LIMIT) {
             this.velocity.normalize().multiplyScalar(this.SPEED_LIMIT);
         }
