@@ -84,7 +84,7 @@ plane.position.set(0, -600, -20);
 var plane_gui = gui.addFolder("Plane");
 plane_gui.add(plane.rotation, 'x').min(-2 * Math.PI).max(2 * Math.PI).step(0.01);
 
-scene.add(plane);
+// scene.add(plane);
 geometry = new THREE.BoxGeometry(424, 1531, 435);
 material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 const cube = new THREE.Mesh(geometry, material);
@@ -134,6 +134,7 @@ pointLight.position.z = 75
 pointLight.intensity = 4
 scene.add(pointLight)
 
+//Best param (research on web)
 const parameterController = {
     alignment: 3.0,
     cohesion: 1.0,
@@ -142,7 +143,7 @@ const parameterController = {
 };
 var boid_gui = gui.addFolder("Boid");
 boid_gui.add(parameterController, 'alignment', 0.0, 20.0, 0.1);
-boid_gui.add(parameterController, 'cohesion', 0.0, 5.0, 0.1);
+boid_gui.add(parameterController, 'cohesion', 0.0, 20.0, 0.1);
 boid_gui.add(parameterController, 'separation', 0.0, 5.0, 0.1);
 boid_gui.add(parameterController, 'attractCenter').name('attract center');
 var light_gui = gui.addFolder("Light");

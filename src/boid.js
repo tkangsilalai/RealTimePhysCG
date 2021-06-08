@@ -16,8 +16,8 @@ export default class Boid {
         this.velocity = new THREE.Vector3(Math.random() - Math.round(Math.random()), Math.random() - Math.round(Math.random()), Math.random() - Math.round(Math.random()));
         this.acceleration = new THREE.Vector3();
         this.mesh = new THREE.Mesh(geometry, material);
-        // this.mesh.position.add(new THREE.Vector3(Math.random() - Math.round(Math.random()), Math.random() - Math.round(Math.random()), Math.random() - Math.round(Math.random())).multiplyScalar(500));
-        this.mesh.position.add(new THREE.Vector3().random().multiplyScalar(500));
+        this.mesh.position.add(new THREE.Vector3(Math.random() - Math.round(Math.random()), Math.random() - Math.round(Math.random()), Math.random() - Math.round(Math.random())).multiplyScalar(500));
+        // this.mesh.position.add(new THREE.Vector3().random().multiplyScalar(500));
         this.maxForce = 0.001;
         var aimP = new THREE.Vector3();
         aimP.copy(this.mesh.position).add(this.velocity);
