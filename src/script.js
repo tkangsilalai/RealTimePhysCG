@@ -79,15 +79,22 @@ material = new THREE.MeshBasicMaterial({
     map: texture
 })
 var plane = new THREE.Mesh(geometry, material);
-plane.rotateX(-20);
+plane.rotateX(-1.57);
 plane.position.set(0, -600, -20);
+var plane_gui = gui.addFolder("Plane");
+plane_gui.add(plane.rotation, 'x').min(-2*Math.PI).max(2*Math.PI).step(0.01);
 
 scene.add(plane);
 geometry = new THREE.BoxGeometry(100, 100, 100);
 material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 const cube = new THREE.Mesh(geometry, material);
 cube.position.set(0, -600, -20);
+cube.scale.set(4.24, 15.31, 4.35);
 scene.add(cube);
+var cube_gui = gui.addFolder("Cube");
+cube_gui.add(cube.scale, 'x').min(0).max(10).step(0.01);
+cube_gui.add(cube.scale, 'y').min(0).max(20).step(0.01);
+cube_gui.add(cube.scale, 'z').min(0).max(10).step(0.01);
 // Sky boxes
 
 loader = new THREE.CubeTextureLoader();

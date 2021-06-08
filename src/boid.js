@@ -11,6 +11,9 @@ export default class Boid {
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.position.add(new THREE.Vector3().random().add(vec_neg5).multiplyScalar(500));
         this.maxForce = 0.001;
+        var aimP = new THREE.Vector3();
+        aimP.copy(this.mesh.position).add(this.velocity);
+        this.mesh.lookAt(aimP);
 
         // setting for 2D
         // this.mesh.position.setZ(0);
@@ -125,6 +128,10 @@ export default class Boid {
     update() {
         this.mesh.position.add(this.velocity);
         this.velocity.add(this.acceleration.multiplyScalar(0.001));
+        var aimP = new THREE.Vector3();
+        aimP.copy(this.mesh.position).add(this.velocity);
+        this.mesh.lookAt(aimP);
+        // this.mesh.rotation.set(this.velocity.x, this.velocity.y, this.velocity.z)
         if (this.velocity.length() > this.SPEED_LIMIT) {
             this.velocity.normalize().multiplyScalar(this.SPEED_LIMIT);
         }
