@@ -41,47 +41,47 @@ var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 // Land
 var loader = new THREE.TextureLoader();
 var texture = loader.load("img/texture/ground2.jpg");
-texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-texture.offset.set( 0, 0 );
-texture.repeat.set( 15, 15 );
-const loaderrr = new GLTFLoader();
-loaderrr.load(
-    // resource URL
-    '/assets/birch_tree.glb',
-    // called when the resource is loaded
-    function (gltf) {
-        gltf.scene.children[0].scale.add(new THREE.Vector3(200, 200, 200));
-        gltf.scene.children[0].position.add(new THREE.Vector3(0, -600, -20));
-        scene.add(gltf.scene);
+// texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+// texture.offset.set( 0, 0 );
+// texture.repeat.set( 15, 15 );
+// const loaderrr = new GLTFLoader();
+// loaderrr.load(
+//     // resource URL
+//     '/assets/birch_tree.glb',
+//     // called when the resource is loaded
+//     function (gltf) {
+//         gltf.scene.children[0].scale.add(new THREE.Vector3(200, 200, 200));
+//         gltf.scene.children[0].position.add(new THREE.Vector3(0, -600, -20));
+//         scene.add(gltf.scene);
 
-        gltf.animations; // Array<THREE.AnimationClip>
-        gltf.scene; // THREE.Group
-        gltf.scenes; // Array<THREE.Group>
-        gltf.cameras; // Array<THREE.Camera>
-        gltf.asset; // Object
+//         gltf.animations; // Array<THREE.AnimationClip>
+//         gltf.scene; // THREE.Group
+//         gltf.scenes; // Array<THREE.Group>
+//         gltf.cameras; // Array<THREE.Camera>
+//         gltf.asset; // Object
 
-    },
-    // called while loading is progressing
-    function (xhr) {
+//     },
+//     // called while loading is progressing
+//     function (xhr) {
 
-        // console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+//         // console.log((xhr.loaded / xhr.total * 100) + '% loaded');
 
-    },
-    // called when loading has errors
-    function (error) {
+//     },
+//     // called when loading has errors
+//     function (error) {
 
-        console.log('An error happened');
+//         console.log('An error happened');
 
-    }
-);
-geometry = new THREE.PlaneGeometry(10000, 10000);
-material = new THREE.MeshBasicMaterial({
-    map: texture
-})
-var plane = new THREE.Mesh(geometry, material);
-plane.rotateX(-20);
-plane.position.set(0, -600, -20);
-scene.add(plane);
+//     }
+// );
+// geometry = new THREE.PlaneGeometry(10000, 10000);
+// material = new THREE.MeshBasicMaterial({
+//     map: texture
+// })
+// var plane = new THREE.Mesh(geometry, material);
+// plane.rotateX(-20);
+// plane.position.set(0, -600, -20);
+// scene.add(plane);
 
 // Sky boxes
 
@@ -299,7 +299,7 @@ class World {
 
         let data;
         var ani_flock = new THREE.AnimationObjectGroup;
-        for (let i = 0; i < 70; i++) {
+        for (let i = 0; i < 10; i++) {
             const loader = new GLTFLoader();
             const parrotData = await loader.loadAsync('assets/Parrot.glb');
             data = parrotData;
