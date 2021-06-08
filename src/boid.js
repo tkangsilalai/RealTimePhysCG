@@ -155,14 +155,14 @@ export default class Boid {
         this.mesh.lookAt(aimP);
         if (this.mesh.position.x > this.range || this.mesh.position.y > this.range || this.mesh.position.z > this.range || this.mesh.position.x < -this.range || this.mesh.position.y < -this.range || this.mesh.position.z < -this.range) {
             this.velocity.multiplyScalar(-1);
-            let x = this.mesh.position.x > this.range ? this.range : this.mesh.position.x
-            x = x > this.range ? this.range : x
-            let y = this.mesh.position.y > this.range ? this.range : this.mesh.position.y
-            y = y > this.range ? this.range : y
-            let z = this.mesh.position.z > this.range ? this.range : this.mesh.position.z
-            z = z > this.range ? this.range : z
+            let x = this.mesh.position.x > this.range ? this.range - Math.random() * 10 + 1 : this.mesh.position.x
+            x = x > this.range ? this.range + Math.random() * 10 + 1 : x
+            let y = this.mesh.position.y > this.range ? this.range - Math.random() * 10 + 1 : this.mesh.position.y
+            y = y > this.range ? this.range + Math.random() * 10 + 1 : y
+            let z = this.mesh.position.z > this.range ? this.range - Math.random() * 10 + 1 : this.mesh.position.z
+            z = z > this.range ? this.range + Math.random() * 10 + 1 : z
             this.mesh.position.set(x, y, z)
-            this.mesh.position.add(this.acceleration.add(new THREE.Vector3(Math.random(), Math.random(), Math.random())));
+            this.mesh.position.add(this.acceleration.add(new THREE.Vector3(0, Math.random(), 0)));
         }
         if (this.velocity.length() > this.SPEED_LIMIT) {
             this.velocity.normalize().multiplyScalar(this.SPEED_LIMIT);
