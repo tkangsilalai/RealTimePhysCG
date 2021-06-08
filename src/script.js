@@ -82,7 +82,7 @@ var plane = new THREE.Mesh(geometry, material);
 plane.rotateX(-1.57);
 plane.position.set(0, -600, -20);
 var plane_gui = gui.addFolder("Plane");
-plane_gui.add(plane.rotation, 'x').min(-2*Math.PI).max(2*Math.PI).step(0.01);
+plane_gui.add(plane.rotation, 'x').min(-2 * Math.PI).max(2 * Math.PI).step(0.01);
 
 scene.add(plane);
 geometry = new THREE.BoxGeometry(424, 1531, 435);
@@ -91,9 +91,9 @@ const cube = new THREE.Mesh(geometry, material);
 cube.position.set(0, -600, -20);
 cube.visible = false;
 cube.geometry.computeBoundingBox();
-const cube_center_x = (cube.geometry.boundingBox.max.x + cube.geometry.boundingBox.min.x)/2
-const cube_center_y = (cube.geometry.boundingBox.max.y + cube.geometry.boundingBox.min.y)/2
-const cube_center_z = (cube.geometry.boundingBox.max.z + cube.geometry.boundingBox.min.z)/2
+const cube_center_x = (cube.geometry.boundingBox.max.x + cube.geometry.boundingBox.min.x) / 2
+const cube_center_y = (cube.geometry.boundingBox.max.y + cube.geometry.boundingBox.min.y) / 2
+const cube_center_z = (cube.geometry.boundingBox.max.z + cube.geometry.boundingBox.min.z) / 2
 const tree_coordinate = {
     center_x: cube_center_x,
     center_y: cube_center_y,
@@ -101,9 +101,9 @@ const tree_coordinate = {
     max_x: cube.geometry.boundingBox.max.x,
     max_y: cube.geometry.boundingBox.max.y,
     max_z: cube.geometry.boundingBox.max.z,
-    radius_x: (cube.geometry.boundingBox.max.x-cube.geometry.boundingBox.min.x)/2,
-    radius_y: (cube.geometry.boundingBox.max.y-cube.geometry.boundingBox.min.y)/2,
-    radius_z: (cube.geometry.boundingBox.max.z-cube.geometry.boundingBox.min.z)/2
+    radius_x: (cube.geometry.boundingBox.max.x - cube.geometry.boundingBox.min.x) / 2,
+    radius_y: (cube.geometry.boundingBox.max.y - cube.geometry.boundingBox.min.y) / 2,
+    radius_z: (cube.geometry.boundingBox.max.z - cube.geometry.boundingBox.min.z) / 2
 }
 scene.add(cube);
 var cube_gui = gui.addFolder("Cube");
@@ -135,9 +135,9 @@ pointLight.intensity = 4
 scene.add(pointLight)
 
 const parameterController = {
-    alignment: 1.0,
-    cohesion: 1.5,
-    separation: 2.0,
+    alignment: 3.0,
+    cohesion: 1.0,
+    separation: 4.0,
     attractCenter: false
 };
 var boid_gui = gui.addFolder("Boid");
@@ -296,12 +296,12 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  * Animate
  */
 const clock = new THREE.Clock()
-
 const tick = () => {
 
     const elapsedTime = clock.getElapsedTime()
 
     // Update objects
+
     for (let boid of flock) {
         // boid.edges();
         boid.flock(flock, parameterController, tree_coordinate);
@@ -328,7 +328,7 @@ class World {
 
         let data;
         var ani_flock = new THREE.AnimationObjectGroup;
-        for (let i = 0; i < 70; i++) {
+        for (let i = 0; i < 300; i++) {
             const loader = new GLTFLoader();
             const parrotData = await loader.loadAsync('assets/Parrot.glb');
             data = parrotData;
