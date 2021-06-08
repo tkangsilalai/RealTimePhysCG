@@ -2,15 +2,18 @@ import * as THREE from 'three'
 
 export default class Boid {
     constructor(GLTF) {
-        // let birdGeo = GLTF.scene.children[0].geometry;
+        const model = GLTF.scene.children[0];
+        const geometry = model.geometry;
+        const material = model.material;
         let vec_neg5 = new THREE.Vector3(-0.5, -0.5, -0.5);
         this.velocity = new THREE.Vector3().random().add(vec_neg5).multiplyScalar(0.5);
         this.acceleration = new THREE.Vector3();
-        this.mesh = new THREE.Mesh(GLTF.scene.children[0].geometry, GLTF.scene.children[0].material);
+        this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.position.add(new THREE.Vector3().random().add(vec_neg5).multiplyScalar(500));
         this.maxForce = 0.001;
-        this.quaternion = new THREE.Quaternion();
-        this.euler = new THREE.Euler( 0, 1, 1.57, 'XYZ' );
+        var aimP = new THREE.Vector3();
+        aimP.copy(this.mesh.position).add(this.velocity);
+        this.mesh.lookAt(aimP);
 
         // setting for 2D
         this.mesh.position.setZ(0);
@@ -126,15 +129,10 @@ export default class Boid {
         this.mesh.position.add(this.velocity);
         let lastVelo = this.velocity.clone();
         this.velocity.add(this.acceleration.multiplyScalar(0.001));
-        let newVelo = this.velocity.clone();    
-        // let test = Math.atan2( this.velocity.y,  this.velocity.x) - ;
-        let degree = newVelo.normalize().sub(lastVelo.normalize());
-        this.quaternion.setFromAxisAngle(  newVelo.normalize(), Math.PI / 2 );
-        // this.mesh.rotateY(test)
-        this.euler.setFromVector3(this.velocity)
-        console.log(this.velocity)
-        this.mesh.setRotationFromEuler(this.euler)
-        console.log(this.euler)
+        var aimP = new THREE.Vector3();
+        aimP.copy(this.mesh.position).add(this.velocity);
+        this.mesh.lookAt(aimP);
+        // this.mesh.rotation.set(this.velocity.x, this.velocity.y, this.velocity.z)
         if (this.velocity.length() > this.SPEED_LIMIT) {
             this.velocity.normalize().multiplyScalar(this.SPEED_LIMIT);
         }

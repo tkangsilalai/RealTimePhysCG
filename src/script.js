@@ -41,48 +41,60 @@ var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 // Land
 var loader = new THREE.TextureLoader();
 var texture = loader.load("img/texture/ground2.jpg");
-// texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-// texture.offset.set( 0, 0 );
-// texture.repeat.set( 15, 15 );
-// const loaderrr = new GLTFLoader();
-// loaderrr.load(
-//     // resource URL
-//     '/assets/birch_tree.glb',
-//     // called when the resource is loaded
-//     function (gltf) {
-//         gltf.scene.children[0].scale.add(new THREE.Vector3(200, 200, 200));
-//         gltf.scene.children[0].position.add(new THREE.Vector3(0, -600, -20));
-//         scene.add(gltf.scene);
+texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+texture.offset.set(0, 0);
+texture.repeat.set(15, 15);
+const loaderrr = new GLTFLoader();
+loaderrr.load(
+    // resource URL
+    '/assets/birch_tree.glb',
+    // called when the resource is loaded
+    function (gltf) {
+        gltf.scene.children[0].scale.add(new THREE.Vector3(200, 200, 200));
+        gltf.scene.children[0].position.add(new THREE.Vector3(0, -600, -20));
+        scene.add(gltf.scene);
 
-//         gltf.animations; // Array<THREE.AnimationClip>
-//         gltf.scene; // THREE.Group
-//         gltf.scenes; // Array<THREE.Group>
-//         gltf.cameras; // Array<THREE.Camera>
-//         gltf.asset; // Object
+        gltf.animations; // Array<THREE.AnimationClip>
+        gltf.scene; // THREE.Group
+        gltf.scenes; // Array<THREE.Group>
+        gltf.cameras; // Array<THREE.Camera>
+        gltf.asset; // Object
 
-//     },
-//     // called while loading is progressing
-//     function (xhr) {
+    },
+    // called while loading is progressing
+    function (xhr) {
 
-//         // console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+        // console.log((xhr.loaded / xhr.total * 100) + '% loaded');
 
-//     },
-//     // called when loading has errors
-//     function (error) {
+    },
+    // called when loading has errors
+    function (error) {
 
-//         console.log('An error happened');
+        console.log('An error happened');
 
-//     }
-// );
-// geometry = new THREE.PlaneGeometry(10000, 10000);
-// material = new THREE.MeshBasicMaterial({
-//     map: texture
-// })
-// var plane = new THREE.Mesh(geometry, material);
-// plane.rotateX(-20);
-// plane.position.set(0, -600, -20);
-// scene.add(plane);
+    }
+);
+geometry = new THREE.PlaneGeometry(10000, 10000);
+material = new THREE.MeshBasicMaterial({
+    map: texture
+})
+var plane = new THREE.Mesh(geometry, material);
+plane.rotateX(-1.57);
+plane.position.set(0, -600, -20);
+var plane_gui = gui.addFolder("Plane");
+plane_gui.add(plane.rotation, 'x').min(-2*Math.PI).max(2*Math.PI).step(0.01);
 
+scene.add(plane);
+geometry = new THREE.BoxGeometry(100, 100, 100);
+material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+const cube = new THREE.Mesh(geometry, material);
+cube.position.set(0, -600, -20);
+cube.scale.set(4.24, 15.31, 4.35);
+scene.add(cube);
+var cube_gui = gui.addFolder("Cube");
+cube_gui.add(cube.scale, 'x').min(0).max(10).step(0.01);
+cube_gui.add(cube.scale, 'y').min(0).max(20).step(0.01);
+cube_gui.add(cube.scale, 'z').min(0).max(10).step(0.01);
 // Sky boxes
 
 loader = new THREE.CubeTextureLoader();
@@ -113,14 +125,16 @@ const parameterController = {
     separation: 2.0,
     attractCenter: false
 };
-gui.add(parameterController, 'alignment', 0.0, 20.0, 0.1);
-gui.add(parameterController, 'cohesion', 0.0, 5.0, 0.1);
-gui.add(parameterController, 'separation', 0.0, 5.0, 0.1);
-gui.add(parameterController, 'attractCenter').name('attract center');
-gui.add(pointLight.position, 'x').min(-100).max(100).step(0.01)
-gui.add(pointLight.position, 'y').min(-100).max(100).step(0.01)
-gui.add(pointLight.position, 'z').min(-100).max(100).step(0.01)
-gui.add(pointLight, 'intensity').min(0).max(20).step(0.01)
+var boid_gui = gui.addFolder("Boid");
+boid_gui.add(parameterController, 'alignment', 0.0, 20.0, 0.1);
+boid_gui.add(parameterController, 'cohesion', 0.0, 5.0, 0.1);
+boid_gui.add(parameterController, 'separation', 0.0, 5.0, 0.1);
+boid_gui.add(parameterController, 'attractCenter').name('attract center');
+var light_gui = gui.addFolder("Light");
+light_gui.add(pointLight.position, 'x').min(-100).max(100).step(0.01)
+light_gui.add(pointLight.position, 'y').min(-100).max(100).step(0.01)
+light_gui.add(pointLight.position, 'z').min(-100).max(100).step(0.01)
+light_gui.add(pointLight, 'intensity').min(0).max(20).step(0.01)
 
 const pointLight1 = new THREE.PointLight(0xffffff, 0.1)
 pointLight1.position.x = 0
@@ -167,8 +181,8 @@ controls.enableDamping = true
 controls.dampingFactor = 0.25;   //damping inertia
 controls.enableZoom = true;      //Zooming
 controls.maxPolarAngle = Math.PI / 2; // Limit angle of visibility
-controls.minAzimuthAngle = -Math.PI; // radians
-controls.maxAzimuthAngle = Math.PI;
+controls.minAzimuthAngle = -Math.PI + 1; // radians
+controls.maxAzimuthAngle = Math.PI - 1;
 controls.keys = {
     LEFT: 65, //left arrow
     UP: 87, // up arrow
