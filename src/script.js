@@ -141,10 +141,16 @@ const parameterController = {
     separation: 4.0,
     attractCenter: false
 };
+// const parameterController = {
+//     alignment: 5.0,
+//     cohesion: 5.0,
+//     separation: 5.0,
+//     attractCenter: false
+// };
 var boid_gui = gui.addFolder("Boid");
 boid_gui.add(parameterController, 'alignment', 0.0, 20.0, 0.1);
 boid_gui.add(parameterController, 'cohesion', 0.0, 20.0, 0.1);
-boid_gui.add(parameterController, 'separation', 0.0, 5.0, 0.1);
+boid_gui.add(parameterController, 'separation', 0.0, 20.0, 0.1);
 boid_gui.add(parameterController, 'attractCenter').name('attract center');
 var light_gui = gui.addFolder("Light");
 light_gui.add(pointLight.position, 'x').min(-100).max(100).step(0.01)
@@ -331,9 +337,17 @@ class World {
         var ani_flock = new THREE.AnimationObjectGroup;
         for (let i = 0; i < 500; i++) {
             const loader = new GLTFLoader();
-            const parrotData = await loader.loadAsync('assets/Parrot.glb');
-            data = parrotData;
-            let boid = new Boid(parrotData);
+            if (i % 3 == 0) {
+                const parrotData = await loader.loadAsync('assets/Parrot.glb');
+                data = parrotData;
+            } else if (i % 3 == 1) {
+                const flamingoData = await loader.loadAsync('assets/Flamingo.glb');
+                data = flamingoData;
+            } else if (i % 3 == 2) {
+                const storkData = await loader.loadAsync('assets/Stork.glb');
+                data = storkData;
+            }
+            let boid = new Boid(data);
             flock.push(boid);
             ani_flock.add(boid.mesh)
             scene.add(boid.mesh);
@@ -371,6 +385,7 @@ async function main() {
     await world.init();
 
     // start the animation loop
+    world.stop();
     world.start();
 }
 tick()
