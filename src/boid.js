@@ -2,7 +2,6 @@ import * as THREE from 'three'
 
 export default class Boid {
     constructor(GLTF) {
-        this.perceptionRadius = 100;
         const model = GLTF.scene.children[0];
         const geometry = model.geometry;
         const material = model.material;
@@ -10,15 +9,16 @@ export default class Boid {
         this.velocity = new THREE.Vector3().random().add(vec_neg5).multiplyScalar(0.5);
         this.acceleration = new THREE.Vector3();
         this.mesh = new THREE.Mesh(geometry, material);
-        this.mesh.position.add(new THREE.Vector3().random().add(vec_neg5).multiplyScalar(500));
-        this.maxForce = 0.001;
+        this.mesh.position.add(new THREE.Vector3().random().add(vec_neg5).multiplyScalar(3000));
+        this.MAX_FORCE = 7.0;
+        this.SPEED_LIMIT = 9.0;
         var aimP = new THREE.Vector3();
         aimP.copy(this.mesh.position).add(this.velocity);
         this.mesh.lookAt(aimP);
 
         // setting for 2D
-        this.mesh.position.setZ(0);
-        this.velocity.setZ(0);
+        // this.mesh.position.setZ(0);
+        // this.velocity.setZ(0);
     }
 
     edges() {
@@ -40,102 +40,111 @@ export default class Boid {
     }
 
     align(boids) {
-        let perceptionRadius = this.perceptionRadius;
         let steering = new THREE.Vector3();
-        let total = 0;
         for (let other of boids) {
-            let d = this.mesh.position.distanceTo(other.mesh.position);
-            if (other != this && d < perceptionRadius) {
-                steering.add(other.velocity);
-                total++;
-            }
+            steering.add(other.velocity);
         }
-        if (total > 0) {
-            // steering.divideScalar(total);
+        if (boids.length > 0) {
+            // steering.divideScalar(boids.length);
             steering.sub(this.velocity);
         }
+        steering = this.setMax(steering, this.MAX_FORCE);
         return steering;
     }
 
     cohesion(boids) {
-        let perceptionRadius = this.perceptionRadius;
         let steering = new THREE.Vector3();
-        let total = 0;
         for (let other of boids) {
-            let d = this.mesh.position.distanceTo(other.mesh.position);
-            if (other != this && d < perceptionRadius) {
-                steering.add(other.mesh.position);
-                total++;
-            }
+            steering.add(other.mesh.position);
         }
-        if (total > 0) {
-            steering.divideScalar(total);
+        if (boids.length > 0) {
+            // steering.divideScalar(boids.length);
             steering.sub(this.mesh.position);
             steering.sub(this.velocity);
         }
+        steering = this.setMax(steering, this.MAX_FORCE);
         return steering;
     }
 
-    seperation(boids) {
-        let perceptionRadius = this.perceptionRadius;
+    seperation(boids, perceptionRadius) {
         let steering = new THREE.Vector3();
-        let total = 0;
         for (let other of boids) {
-            let d = this.mesh.position.distanceTo(other.mesh.position);
-            if (other != this && d < perceptionRadius) {
-                let selfPos = this.mesh.position.clone();
-                let diff = selfPos.sub(other.mesh.position);
-                // if (d < 1) {
-                //     diff.multiplyScalar(d) ;
-                // } else {
-                //     diff.divideScalar(d) ;
-                // }
-                // diff.divideScalar(d) ;
-                let percent = 1 - (d / perceptionRadius);
-                steering.add(diff.normalize().multiplyScalar(perceptionRadius).multiplyScalar(percent));
-                total++;
-            }
+            let dist = this.mesh.position.distanceTo(other.mesh.position);
+            let selfPos = this.mesh.position.clone();
+            let diff = selfPos.sub(other.mesh.position);
+
+            let percent = 1 - (dist / perceptionRadius);
+            steering.add(diff.normalize().multiplyScalar(percent));
         }
-        if (total > 0) {
-            steering.divideScalar(total);
+        if (boids.length > 0) {
+            // steering.divideScalar(boids.length);
             steering.sub(this.velocity);
         }
+        steering = this.setMax(steering, this.MAX_FORCE);
         return steering;
     }
 
     attractCenter() {
-        let center = new THREE.Vector3(0);
+        let center = new THREE.Vector3();
         let selfPos = this.mesh.position.clone().normalize();
         let steering = selfPos.sub(center);
-        steering.sub(this.velocity);
         return steering;
     }
 
-    flock(boids, parameterController, obstacle) {
+    calculateForce(boids, parameterController) {
         this.acceleration = new THREE.Vector3();
-        let alignment = this.align(boids);
-        let cohesion = this.cohesion(boids);
-        let seperation = this.seperation(boids);
-        let attractCenter = this.attractCenter();
-        let dodge = this.dodge(obstacle);
-        this.acceleration.add(alignment.multiplyScalar(parameterController.alignment));
-        this.acceleration.add(cohesion.multiplyScalar(parameterController.cohesion));
-        this.acceleration.add(seperation.multiplyScalar(parameterController.separation));
-        this.acceleration.add(dodge.multiplyScalar(5));
+        let zoneRadius = 40.0;
+		let zoneRadiusSquared = 1600.0;
+        let separationThresh = 0.45;
+		let alignmentThresh = 0.65;
+        let boids_sep = [];
+        let boids_align = [];
+        let boids_co = [];
+        zoneRadius = parameterController.alignment + parameterController.cohesion + parameterController.separation;
+        separationThresh = parameterController.separation;
+        alignmentThresh = parameterController.separation + parameterController.alignment;
+        zoneRadiusSquared = zoneRadius * zoneRadius;
+
         if (parameterController.attractCenter) {
-            this.acceleration.sub(attractCenter.multiplyScalar(2));
+            this.acceleration.sub(this.attractCenter().multiplyScalar(0.2));
         }
 
+        for (let other of boids) {
+            let otherPos = other.mesh.position.clone();
+            let vecSelftoOther = otherPos.sub(this.mesh.position);
+            let dreg = this.velocity.angleTo(vecSelftoOther);
+            let dist = this.mesh.position.distanceTo(other.mesh.position);
+            if (other == this) continue;
+            if (Math.abs(dreg) > 2.5) continue;
+            if (dist  > zoneRadius) continue;
+            if (dist < separationThresh) boids_sep.push(other);
+            else if (dist < alignmentThresh) boids_align.push(other);
+            // else boids_co.push(other);
+        }
+
+        this.acceleration.add(this.seperation(boids_sep, separationThresh));
+        this.acceleration.add(this.align(boids_align));
+        this.acceleration.add(this.cohesion(boids_co));
+
+    }
+
+    flock(boids, parameterController, obstacle) {
+        this.calculateForce(boids, parameterController);
+        let dodge = this.dodge(obstacle);
+        this.acceleration.add(dodge.multiplyScalar(5));
+    }
+
+    setMax(value, maxValue) {
+        if (value.length() > maxValue) return value.normalize().multiplyScalar(this.SPEED_LIMIT);
+        else return value;
     }
 
     update() {
         this.mesh.position.add(this.velocity);
-        this.velocity.add(this.acceleration.multiplyScalar(0.001));
-        var aimP = this.mesh.position.clone().add(this.velocity);
+        this.velocity.add(this.acceleration.multiplyScalar(0.4));
+        var aimP = this.mesh.position.clone().add(this.velocity.clone().normalize());
         this.mesh.lookAt(aimP);
-        if (this.velocity.length() > this.SPEED_LIMIT) {
-            this.velocity.normalize().multiplyScalar(this.SPEED_LIMIT);
-        }
+        this.velocity = this.setMax(this.velocity, this.SPEED_LIMIT);
     }
 
     dodge(obstacle) {

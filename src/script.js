@@ -45,46 +45,46 @@ texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 texture.offset.set(0, 0);
 texture.repeat.set(15, 15);
 const loaderrr = new GLTFLoader();
-loaderrr.load(
-    // resource URL
-    '/assets/birch_tree.glb',
-    // called when the resource is loaded
-    function (gltf) {
-        gltf.scene.children[0].scale.add(new THREE.Vector3(200, 200, 200));
-        gltf.scene.children[0].position.add(new THREE.Vector3(0, -600, -20));
-        scene.add(gltf.scene);
+// loaderrr.load(
+//     // resource URL
+//     '/assets/birch_tree.glb',
+//     // called when the resource is loaded
+//     function (gltf) {
+//         gltf.scene.children[0].scale.add(new THREE.Vector3(200, 200, 200));
+//         gltf.scene.children[0].position.add(new THREE.Vector3(0, -600, -20));
+//         scene.add(gltf.scene);
 
-        gltf.animations; // Array<THREE.AnimationClip>
-        gltf.scene; // THREE.Group
-        gltf.scenes; // Array<THREE.Group>
-        gltf.cameras; // Array<THREE.Camera>
-        gltf.asset; // Object
+//         gltf.animations; // Array<THREE.AnimationClip>
+//         gltf.scene; // THREE.Group
+//         gltf.scenes; // Array<THREE.Group>
+//         gltf.cameras; // Array<THREE.Camera>
+//         gltf.asset; // Object
 
-    },
-    // called while loading is progressing
-    function (xhr) {
+//     },
+//     // called while loading is progressing
+//     function (xhr) {
 
-        // console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+//         // console.log((xhr.loaded / xhr.total * 100) + '% loaded');
 
-    },
-    // called when loading has errors
-    function (error) {
+//     },
+//     // called when loading has errors
+//     function (error) {
 
-        console.log('An error happened');
+//         console.log('An error happened');
 
-    }
-);
-geometry = new THREE.PlaneGeometry(10000, 10000);
-material = new THREE.MeshBasicMaterial({
-    map: texture
-})
-var plane = new THREE.Mesh(geometry, material);
-plane.rotateX(-1.57);
-plane.position.set(0, -600, -20);
-var plane_gui = gui.addFolder("Plane");
-plane_gui.add(plane.rotation, 'x').min(-2*Math.PI).max(2*Math.PI).step(0.01);
+//     }
+// );
+// geometry = new THREE.PlaneGeometry(10000, 10000);
+// material = new THREE.MeshBasicMaterial({
+//     map: texture
+// })
+// var plane = new THREE.Mesh(geometry, material);
+// plane.rotateX(-1.57);
+// plane.position.set(0, -600, -20);
+// var plane_gui = gui.addFolder("Plane");
+// plane_gui.add(plane.rotation, 'x').min(-2*Math.PI).max(2*Math.PI).step(0.01);
 
-scene.add(plane);
+// scene.add(plane);
 geometry = new THREE.BoxGeometry(424, 1531, 435);
 material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
 const cube = new THREE.Mesh(geometry, material);
@@ -135,15 +135,15 @@ pointLight.intensity = 4
 scene.add(pointLight)
 
 const parameterController = {
-    alignment: 1.0,
-    cohesion: 1.5,
-    separation: 2.0,
-    attractCenter: false
+    alignment: 20.0,
+    cohesion: 20.0,
+    separation: 40.0,
+    attractCenter: true
 };
 var boid_gui = gui.addFolder("Boid");
-boid_gui.add(parameterController, 'alignment', 0.0, 20.0, 0.1);
-boid_gui.add(parameterController, 'cohesion', 0.0, 5.0, 0.1);
-boid_gui.add(parameterController, 'separation', 0.0, 5.0, 0.1);
+boid_gui.add(parameterController, 'alignment', 0.0, 100.0, 0.001);
+boid_gui.add(parameterController, 'cohesion', 0.0, 100.0, 0.025);
+boid_gui.add(parameterController, 'separation', 0.0, 300.0, 10.0);
 boid_gui.add(parameterController, 'attractCenter').name('attract center');
 var light_gui = gui.addFolder("Light");
 light_gui.add(pointLight.position, 'x').min(-100).max(100).step(0.01)
@@ -187,6 +187,7 @@ const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 
 camera.position.x = 0
 camera.position.y = 0
 camera.position.z = 500
+scene.fog = new THREE.Fog( 0xffffff, 1000, 5000 );
 scene.add(camera)
 
 // Controls
@@ -328,7 +329,7 @@ class World {
 
         let data;
         var ani_flock = new THREE.AnimationObjectGroup;
-        for (let i = 0; i < 70; i++) {
+        for (let i = 0; i < 500; i++) {
             const loader = new GLTFLoader();
             const parrotData = await loader.loadAsync('assets/Parrot.glb');
             data = parrotData;
