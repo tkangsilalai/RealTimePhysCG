@@ -10,7 +10,7 @@ export default class Boid {
         this.acceleration = new THREE.Vector3();
         this.mesh = new THREE.Mesh(geometry, material);
         this.mesh.position.add(new THREE.Vector3().random().add(vec_neg5).multiplyScalar(3000));
-        this.MAX_FORCE = 7.0;
+        this.MAX_FORCE = 0.7;
         this.SPEED_LIMIT = 9.0;
         var aimP = new THREE.Vector3();
         aimP.copy(this.mesh.position).add(this.velocity);
@@ -52,13 +52,18 @@ export default class Boid {
         return steering;
     }
 
-    cohesion(boids) {
+    cohesion(boids, perceptionRadius) {
         let steering = new THREE.Vector3();
         for (let other of boids) {
-            steering.add(other.mesh.position);
+            let dist = this.mesh.position.distanceTo(other.mesh.position);
+            let percent = 0.5 + (dist / perceptionRadius);
+            let diff = other.mesh.position.clone();
+            // console.log(percent)
+            steering.add(diff.multiplyScalar(percent));
+            // steering.add(other.mesh.position);
         }
         if (boids.length > 0) {
-            // steering.divideScalar(boids.length);
+            steering.divideScalar(boids.length);
             steering.sub(this.mesh.position);
             steering.sub(this.velocity);
         }
@@ -73,11 +78,11 @@ export default class Boid {
             let selfPos = this.mesh.position.clone();
             let diff = selfPos.sub(other.mesh.position);
 
-            let percent = 1 - (dist / perceptionRadius);
-            steering.add(diff.normalize().multiplyScalar(percent));
+            let percent = 2 - (dist / perceptionRadius);
+            steering.add(diff.multiplyScalar(percent));
         }
         if (boids.length > 0) {
-            // steering.divideScalar(boids.length);
+            steering.divideScalar(boids.length);
             steering.sub(this.velocity);
         }
         steering = this.setMax(steering, this.MAX_FORCE);
@@ -106,7 +111,7 @@ export default class Boid {
         zoneRadiusSquared = zoneRadius * zoneRadius;
 
         if (parameterController.attractCenter) {
-            this.acceleration.sub(this.attractCenter().multiplyScalar(0.2));
+            this.acceleration.sub(this.attractCenter().multiplyScalar(0.4));
         }
 
         for (let other of boids) {
@@ -115,33 +120,33 @@ export default class Boid {
             let dreg = this.velocity.angleTo(vecSelftoOther);
             let dist = this.mesh.position.distanceTo(other.mesh.position);
             if (other == this) continue;
-            if (Math.abs(dreg) > 2.5) continue;
-            if (dist  > zoneRadius) continue;
+            if (Math.abs(dreg) > 2) continue;
+            if (dist >= zoneRadius) continue;
             if (dist < separationThresh) boids_sep.push(other);
             else if (dist < alignmentThresh) boids_align.push(other);
-            // else boids_co.push(other);
+            else boids_co.push(other);
         }
 
         this.acceleration.add(this.seperation(boids_sep, separationThresh));
         this.acceleration.add(this.align(boids_align));
-        this.acceleration.add(this.cohesion(boids_co));
+        this.acceleration.add(this.cohesion(boids_co, zoneRadius));
 
     }
 
     flock(boids, parameterController, obstacle) {
         this.calculateForce(boids, parameterController);
-        let dodge = this.dodge(obstacle);
-        this.acceleration.add(dodge.multiplyScalar(5));
+        // let dodge = this.dodge(obstacle);
+        // this.acceleration.add(dodge.multiplyScalar(5));
     }
 
     setMax(value, maxValue) {
-        if (value.length() > maxValue) return value.normalize().multiplyScalar(this.SPEED_LIMIT);
+        if (value.length() > maxValue) return value.normalize().multiplyScalar(maxValue);
         else return value;
     }
 
     update() {
         this.mesh.position.add(this.velocity);
-        this.velocity.add(this.acceleration.multiplyScalar(0.4));
+        this.velocity.add(this.acceleration.multiplyScalar(0.3));
         var aimP = this.mesh.position.clone().add(this.velocity.clone().normalize());
         this.mesh.lookAt(aimP);
         this.velocity = this.setMax(this.velocity, this.SPEED_LIMIT);

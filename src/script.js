@@ -137,7 +137,7 @@ scene.add(pointLight)
 const parameterController = {
     alignment: 20.0,
     cohesion: 20.0,
-    separation: 40.0,
+    separation: 100.0,
     attractCenter: true
 };
 var boid_gui = gui.addFolder("Boid");
