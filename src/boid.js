@@ -5,7 +5,7 @@ export default class Boid {
     const model = GLTF.scene.children[0];
     const geometry = model.geometry;
     const material = model.material;
-    let vec_neg5 = new THREE.Vector3(-0.5, -0.5, -0.5);
+    let vec_neg5 = new THREE.Vector3(-0.5, 0, -0.5);
     this.velocity = new THREE.Vector3()
       .random()
       .add(vec_neg5)
@@ -146,9 +146,17 @@ export default class Boid {
 
   flock(boids, parameterController, obstacle) {
     this.calculateForce(boids, parameterController);
-    let dodge = this.dodge(obstacle);
+    // let handleGround = this.handleGround(obstacle[0], 100);
+    // this.acceleration.add(handleGround.multiplyScalar(0.0559));
+    // let handleGround = this.handleGround(obstacle[0], 50);
+    // this.acceleration.add(handleGround.multiplyScalar(0.228));
+    let handleGround = this.handleGround(obstacle[0], 25);
+    this.acceleration.add(handleGround.multiplyScalar(1.44));
+    // let handleGround = this.handleGround(obstacle[0], 15);
+    // this.acceleration.add(handleGround.multiplyScalar(1000000000000));
+    let dodge = this.dodge([...obstacle.slice(1, obstacle.length)], 500);
     // console.log(dodge);
-    this.acceleration.add(dodge.multiplyScalar(3));
+    this.acceleration.add(dodge.multiplyScalar(0.006));
   }
 
   setMax(value, maxValue) {
@@ -167,8 +175,7 @@ export default class Boid {
     this.velocity = this.setMax(this.velocity, this.SPEED_LIMIT);
   }
 
-  dodge(obstacleArray) {
-    let perceptionRadius = 200;
+  dodge(obstacleArray, perceptionRadius) {
     let steering = new THREE.Vector3();
     obstacleArray.forEach((obstacle) => {
       const dist_x = Math.abs(this.mesh.position.x - obstacle.center_x);
@@ -186,7 +193,8 @@ export default class Boid {
         let d = this.mesh.position.distanceTo(center);
         if (d < perceptionRadius) {
           let selfPos = this.mesh.position.clone();
-          let diff = selfPos.sub(center);
+          let diff = selfPos.sub(center).normalize();
+          diff = diff.add(this.velocity.clone().normalize());
           let percent = 1 - d / perceptionRadius;
           steering.add(
             diff
@@ -197,6 +205,36 @@ export default class Boid {
         }
       }
     });
+    return steering;
+  }
+
+  handleGround(ground, perceptionRadius) {
+    let steering = new THREE.Vector3();
+    let selfPos = this.mesh.position.clone();
+    if (selfPos.y <= ground.center_y + perceptionRadius) {
+      const center = new THREE.Vector3(
+        this.mesh.position.x,
+        ground.center_y,
+        this.mesh.position.z
+      );
+      let d = this.mesh.position.distanceTo(center);
+      if (d < perceptionRadius) {
+        let diff = selfPos.sub(center);
+        // if (selfPos.y <= ground.center_y + perceptionRadius) {
+        //   diff.sub(this.velocity.clone());
+        // } else {
+        //   diff.add(this.velocity.clone());
+        // }
+        diff.add(this.velocity.clone());
+        let percent = 1 - d / perceptionRadius;
+        steering.add(
+          diff
+            .normalize()
+            .multiplyScalar(perceptionRadius)
+            .multiplyScalar(percent)
+        );
+      }
+    }
     return steering;
   }
 }

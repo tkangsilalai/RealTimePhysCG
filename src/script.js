@@ -108,9 +108,9 @@ const ground_coordinate = {
   max_x: 0,
   max_y: 0,
   max_z: 0,
-  radius_x: 200,
-  radius_y: 200,
-  radius_z: 200,
+  radius_x: 1000,
+  radius_y: 1000,
+  radius_z: 1000,
 };
 obstacle.push(ground_coordinate);
 scene.add(cube);
@@ -198,7 +198,7 @@ const camera = new THREE.PerspectiveCamera(
   10000
 );
 camera.position.x = 0;
-camera.position.y = 0;
+camera.position.y = 1000;
 camera.position.z = 500;
 scene.fog = new THREE.Fog(0xffffff, 1000, 5000);
 scene.add(camera);
@@ -209,9 +209,9 @@ controls.enableDamping = true;
 
 controls.dampingFactor = 0.25; //damping inertia
 controls.enableZoom = true; //Zooming
-controls.maxPolarAngle = Math.PI / 2; // Limit angle of visibility
-controls.minAzimuthAngle = -Math.PI + 1; // radians
-controls.maxAzimuthAngle = Math.PI - 1;
+controls.maxPolarAngle = (2 * Math.PI) / 3; // Limit angle of visibility
+controls.minDistance = 500;
+controls.maxDistance = 2500;
 controls.keys = {
   LEFT: 65, //left arrow
   UP: 87, // up arrow
