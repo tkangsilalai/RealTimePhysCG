@@ -19,12 +19,6 @@ const scene = new THREE.Scene();
 const flock = [];
 var geometry = new THREE.PlaneGeometry(1, 1, 1);
 var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-// for (let i = 0; i < 70; i++) {
-//     // let geometry = new THREE.IcosahedronGeometry( Math.random()*1.5 );
-//     let boid = new Boid(geometry, material);
-//     flock.push(boid);
-//     scene.add(boid.mesh);
-// }
 
 // Land
 var loader = new THREE.TextureLoader();
@@ -338,16 +332,19 @@ class World {
 
   async init() {
     let data;
+
+
     var ani_flock = new THREE.AnimationObjectGroup();
-    for (let i = 0; i < 500; i++) {
+    let BIRD_COUNT = 500;
+
+    for (let i = 0; i < BIRD_COUNT; i++) {
       const loader = new GLTFLoader();
       const parrotData = await loader.loadAsync("assets/Parrot.glb");
-      data = parrotData;
-      let boid = new Boid(parrotData);
+      let boid = new Boid(parrotData); // class boid generate Mesh and store porperty such as velocity etc.
       flock.push(boid);
-      ani_flock.add(boid.mesh);
       scene.add(boid.mesh);
-      // scene.add(boid);
+      ani_flock.add(boid.mesh);
+      data = parrotData;
     }
     const mixer = new THREE.AnimationMixer(ani_flock);
     mixer.clipAction(data.animations[0]).play();
