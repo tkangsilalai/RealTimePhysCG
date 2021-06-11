@@ -147,7 +147,7 @@ export default class Boid {
   flock(boids, parameterController, obstacle) {
     this.calculateForce(boids, parameterController);
     let handleGround = this.handleGround(obstacle[0], 100);
-    this.acceleration.add(handleGround.multiplyScalar(0.0559));
+    this.acceleration.add(handleGround.multiplyScalar(0.06));
     // let handleGround = this.handleGround(obstacle[0], 50);
     // this.acceleration.add(handleGround.multiplyScalar(0.228));
     // let handleGround = this.handleGround(obstacle[0], 25);
