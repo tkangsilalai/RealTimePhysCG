@@ -198,8 +198,8 @@ const camera = new THREE.PerspectiveCamera(
   10000
 );
 camera.position.x = 0;
-camera.position.y = 1000;
-camera.position.z = 500;
+camera.position.y = 0;
+camera.position.z = 2000;
 scene.fog = new THREE.Fog(0xffffff, 1000, 5000);
 scene.add(camera);
 
@@ -209,7 +209,8 @@ controls.enableDamping = true;
 
 controls.dampingFactor = 0.25; //damping inertia
 controls.enableZoom = true; //Zooming
-controls.maxPolarAngle = (2 * Math.PI) / 3; // Limit angle of visibility
+
+controls.maxPolarAngle = 1.745; // Limit angle of visibility
 controls.minDistance = 500;
 controls.maxDistance = 2500;
 controls.keys = {
@@ -280,19 +281,19 @@ function drawStuff() {
   window.requestAnimationFrame(drawStuff);
 
   if (keyD == true) {
-    camera.position.x++;
+    camera.position.x += 100;
   }
   if (keyS == true) {
-    camera.position.y--;
+    camera.position.y -= 100;
   }
   if (keyA == true) {
-    camera.position.x--;
+    camera.position.x -= 100;
   }
   if (keyW == true) {
-    camera.position.y++;
+    camera.position.y += 100;
   }
   if (keyR == true) {
-    camera.position.set(0, 0, 100);
+    camera.position.set(0, 0, 2000);
   }
 }
 window.requestAnimationFrame(drawStuff);
